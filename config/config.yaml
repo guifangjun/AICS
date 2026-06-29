@@ -1,0 +1,142 @@
+# ============================================================
+# 微信智能客服系统 — 全局配置文件
+# 修改此文件后重启服务即可生效
+# ============================================================
+
+# ---- LLM 大模型配置 ----
+llm:
+  # 当前使用的模型 provider，可选: deepseek | qwen | zhipu | minimax | openai
+  provider: deepseek
+  # 可在此覆盖各 provider 的默认 Base URL（通常无需修改）
+  providers:
+    deepseek:
+      base_url: https://api.deepseek.com/v1
+    qwen:
+      base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    zhipu:
+      base_url: https://open.bigmodel.cn/api/paas/v4
+    minimax:
+      base_url: https://api.minimax.chat/v1
+    openai:
+      base_url: https://api.openai.com/v1
+  # 默认模型名（Provider 各自的模型代号）
+  model_name: deepseek-chat
+  # 温度参数 0-1，客服场景建议偏低保证准确性
+  temperature: 0.3
+  # 最大输出 Token
+  max_tokens: 1024
+
+# ---- Embedding 向量化模型配置 ----
+embedding:
+  # Provider: local | deepseek | qwen | zhipu | minimax | openai
+  # 推荐 local（免费本地模型，无需 API Key）
+  provider: local
+  # 本地模型名（HuggingFace 模型），provider=local 时生效
+  model_name: BAAI/bge-large-zh-v1.5
+  # Embedding 维度（bge-large-zh-v1.5 为 1024）
+  dimension: 1024
+
+# ---- 知识库配置 ----
+knowledge_base:
+  # 文档源目录
+  docs_dir: data/knowledge
+  # ChromaDB 持久化目录
+  persist_dir: data/chroma_db
+  # 文本切片大小
+  chunk_size: 500
+  # 切片重叠长度
+  chunk_overlap: 50
+  # 检索返回的最相关文档数
+  retrieve_top_k: 8
+  # RAG 结果的最低相似度阈值（低于此值视为无法回答）
+  score_threshold: 0.15
+
+# ---- 对话记忆配置 ----
+memory:
+  # 保留最近 N 轮对话
+  window_size: 10
+  # 最大上下文 Token 数（超过则自动裁剪）
+  max_token_limit: 3000
+
+# ---- 客服话术配置 ----
+customer_service:
+  # ---- 欢迎语 / 开场白 ----
+  welcome_message: |
+    你好呀～欢迎来到阿虎医考！🎓
+    我是你的课程顾问"阿虎"，很高兴为你服务～
+    无论你想了解医师、护士、药师还是医学考研课程，都可以随时问我哦！
+    如果想咨询人工课程顾问，直接输入"人工"我帮你转接哈～
+
+  # ---- 快捷回复（关键词 → 标准话术）----
+  fast_replies:
+    "课程": "阿虎医考的课程涵盖：临床执业医师、中医执业医师、护士执业、执业药师、医学考研等～录播课、直播课、面授班都有，还有不过重读的保障哦！你是想备考哪个方向呢？我帮你推荐最合适的课程～"
+    "价格": "课程价格根据类型和课时不同有所差异哈～录播精讲班大概在几百到一千多，直播冲刺班在两千左右，面授班和一对一辅导会更贵一些。你可以告诉我你的预算和备考科目，我帮你筛选一下～"
+    "试听": "有的呀～大部分课程都支持免费试听！你可以在阿虎医考APP或官网上找到试听入口，想试听哪个科目告诉我，我发你链接～"
+    "通过率": "阿虎医考历年整体通过率在行业里是很高的哦～我们的名师团队经验丰富，加上智能题库和模拟考试系统，只要跟着学下来，通过率非常有保障！而且很多课程都有不过重读/退费的保障政策呢。"
+    "电话": "可以拨打我们的咨询热线 4400-683-0078，工作日 9:45-19:45 都有人接听～当然也可以直接在这里问我，我24小时在线！"
+    "退款": "关于退费问题哈～报名后7天内未开课可以全额退款，已开课的按已上课时比例退款。具体退费金额可以帮你提交申请后由财务核算～要不我先帮你登记一下？"
+    "怎么报名": "报名很方便哦～阿虎医考APP、官网、微信小程序都可以直接下单报名。支付方式支持微信、支付宝、银行卡。报名后自动开通课程权限，马上就能开始学！需要我发你报名入口链接吗？"
+
+  # ---- 人工转接触发词 ----
+  human_trigger_words:
+    - "人工"
+    - "转人工"
+    - "人工客服"
+    - "真人"
+    - "帮我转接"
+    - "找客服"
+    - "课程顾问"
+    - "老师"
+    - "打电话"
+
+  # ---- 敏感 / 投诉关键词（触发人工介入）----
+  sensitive_keywords:
+    - "投诉"
+    - "退款"
+    - "维权"
+    - "315"
+    - "举报"
+    - "诈骗"
+    - "投诉你们"
+    - "消费者协会"
+    - "骗人"
+    - "坑人"
+
+  # ---- 人工转接话术 ----
+  human_handoff_message: |
+    好的，我理解你需要专业的课程顾问老师来帮你～
+    已经帮你转接了，请稍等片刻，专属课程顾问马上来为你服务！
+    工作时间（9:45-19:45）内通常会在3分钟内响应哦～
+    着急的话也可以直接拨打 400-683-0078 联系顾问老师哈～
+
+  # ---- 无法回答时的兜底话术 ----
+  fallback_message: |
+    抱歉呀，这个问题我暂时还不太确定 😅
+    要不我帮你转接专业的课程顾问老师？输入"人工"就好哈～
+
+  # ---- 语气优化配置 ----
+  tone:
+    # 是否启用拟人化语气词（呢/哦/哈/～）
+    enabled: true
+    # 回复最大长度（字符数），超过自动截断
+    max_reply_length: 500
+    # 模拟打字延迟（毫秒，用于前端展示，API场景为0）
+    typing_delay_ms: 0
+
+# ---- 微信配置 ----
+wechat:
+  # 公众号 Token（与微信后台配置保持一致）
+  token: your_wechat_token_here
+  # 公众号 AppID
+  appid: your_appid_here
+  # 公众号 AppSecret
+  appsecret: your_appsecret_here
+  # 消息加密密钥（明文模式可不填）
+  encoding_aes_key: ""
+
+# ---- 日志配置 ----
+logging:
+  # 日志保留天数
+  retention_days: 30
+  # 日志级别: DEBUG | INFO | WARNING | ERROR
+  level: INFO
